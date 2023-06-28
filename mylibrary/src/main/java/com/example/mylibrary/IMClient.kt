@@ -130,6 +130,7 @@ class IMClient private constructor(builder: Builder) {
         mReceiver = receiver
         this.imParams = imParams
         this.loginCallback = loginStatusCallback
+        // 注意，这里开启了im服务进程
         setupService()
     }
 
@@ -171,11 +172,14 @@ class IMClient private constructor(builder: Builder) {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             messageSender = IMessageProvider.Stub.asInterface(service)
             Logger.log("进程连接成功 $name")
+            // 绑定服务成功后，设置服务死亡监听 注册消息接收监听，注册登录状态监听，设置长连接, 设置登录参数
             messageSender?.run {
                 asBinder().linkToDeath(deathRecipient, 0)
                 registerMessageReceiveListener(mReceiver)
                 registerLoginReceiveListener(loginCallback)
                 bindLongConnectionService(getLongConnection())
+                // 注意 这里只是设置了登录参数 并没有真正的登录im服务器  调用了   DefaultLongConnectionImpl?.initLoginParams(imParams)
+                // 真正的链接 是在 NetworkManager.register后，onAvailable回调中发生的
                 login(imParams)
             }
         }

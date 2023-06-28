@@ -30,6 +30,7 @@ object IMCore {
                 .withUrl("ws://192.168.31.222:8081")
                 .withToken("auth")
                 .build(),
+            // 应用进程，登录状态接收者
             object : IMLoginStatusReceiver.Stub() {
                 override fun loginStatus(status: Int) {
                     when (status) {
@@ -45,6 +46,7 @@ object IMCore {
                     }
                 }
             },
+            // 应用进程，消息接收者
             IMReceiver(),
         )
     }

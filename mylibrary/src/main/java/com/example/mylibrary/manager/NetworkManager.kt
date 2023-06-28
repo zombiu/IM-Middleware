@@ -36,6 +36,7 @@ internal object NetworkManager {
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
+            Logger.log("onAvailable 开启WS连接")
             // 网络连接成功时执行
             connectWebSocket() // 重连 WebSocket
         }
